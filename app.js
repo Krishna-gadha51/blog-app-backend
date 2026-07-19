@@ -28,8 +28,7 @@ app.post("/create",async(req,res)=>{
     Jwt.verify(token,"blogapp",async(error,decoded)=>{
         if(decoded && decoded.email){
 
-            let result=new postModel
-            (input)
+            let result=new postModel(input)
             await result.save()
             res.json({"status":"success"})
 
@@ -38,6 +37,31 @@ app.post("/create",async(req,res)=>{
             res.json({"status":"Invalid authentication"})
         }
     })
+})
+
+
+
+ app.post("/viewall",async(req,res)=>{
+
+    let token=req.headers.token
+    
+    Jwt.verify(token,"blogapp",(error,decoded)=>{
+        if (decoded && decoded.email){
+
+            postModel.find().then(
+                (items)=>{
+                    res.json(items)
+                }
+            ).catch(
+                (error)=>{
+                    res.json({"status":"error"})
+                }
+            )
+        }else{
+            res.json({"status":"invalid authentication"})
+        }
+    })
+
 })
 
 
