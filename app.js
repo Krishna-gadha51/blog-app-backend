@@ -1,5 +1,5 @@
 const Express = require('express');
- const Mongoose = require('mongoose');
+const Mongoose = require('mongoose');
 const Bcrypt = require('bcrypt');
 const Jwt = require('jsonwebtoken');
 const Cors = require('cors');
@@ -113,6 +113,7 @@ app.post('/signIn', async (req, res) =>{
                 const passwordValidator=Bcrypt.compareSync(req.body.password,items[0].password);
                 if(passwordValidator){
                     Jwt.sign({email:req.body.email},"blogapp",{expiresIn:"2d"},
+                    Jwt.sign({email:req.body.email},"blogapp",{expiresIn:"1d"},
                         (error,token)=>{
                         if(error){
                             res.json({"status":"error", "errormeassage":error});
@@ -154,32 +155,33 @@ app.post('/signIn', async (req, res) =>{
 
 
 
-//signup api
-app.post('/signup',async (req, res) => {
+
+//sign up api
+app.post('/signup', async (req, res) => {
     let input = req.body;
     let hashedPassword = Bcrypt.hashSync(req.body.password, 10);
     console.log(hashedPassword);
     req.body.password = hashedPassword;
-    
-    
-     userModel.find({ email: req.body.email }).then(
-        (items)=>{
-       
-    
-        if (items.length > 0) {
 
-            res.json({ "status": "email id already exists" });
-         } 
-         else {
-             let result=new userModel(input);
-              result.save();
-             res.json({ "status": "created successfully" });
-       
-    }
-    });
+
+    userModel.find({ email: req.body.email }).then(
+        (items) => {
+
+
+            if (items.length > 0) {
+
+                res.json({ "status": "email id already exists" });
+            }
+            else {
+                let result = new userModel(input);
+                result.save();
+                res.json({ "status": "created successfully" });
+
+            }
+        });
 });
 
 
-app.listen (3030, () => {
+app.listen(3030, () => {
     console.log('Server stared');
 })
